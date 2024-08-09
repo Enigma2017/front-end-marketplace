@@ -1,44 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import SearchInput from "./components/search";
+import CardContainer from "./components/cardContainer";
 import { fetchRecipes } from "./api/api";
-import { Recipe } from "./types/types";
+import { Recipe, RecipeResponse } from "./types/types";
 
 const App: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
 
   useEffect(() => {
-    const getRecipes = async () => {
-      try {
-        const data = await fetchRecipes();
-        setRecipes(data.hits.map((hit) => hit.recipe));
-      } catch (error) {
-        console.error("Error fetching recipes:", error);
-      }
-    };
-
-    getRecipes();
+    fetchRecipes().then((data: RecipeResponse) => {
+      const recipes = data.hits.map((hit) => hit.recipe);
+      setRecipes(recipes);
+    });
   }, []);
 
   return (
-    <div>
+    <div className="container">
       <h1>Recipes</h1>
       <SearchInput />
-      <ul>
-        {recipes.map((recipe, index) => (
-          <li key={index}>
-            <h2>{recipe.label}</h2>
-            <img src={recipe.image} alt={recipe.label} />
-            <p>
-              Source: <a href={recipe.url}>{recipe.source}</a>
-            </p>
-            <ul>
-              {recipe.ingredients.map((ingredient, i) => (
-                <li key={i}>{ingredient.text}</li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
+      <CardContainer recipes={recipes} />
     </div>
   );
 };
