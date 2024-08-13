@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { RecipeResponse } from '../types/types';
+import { RecipeResponse, Recipe } from '../types/types';
 
 const API_BASE_URL = 'https://api.edamam.com/api/recipes/v2';
 const APP_ID = 'ebbc0f49';
@@ -34,3 +34,22 @@ export const fetchRecipes = async (
     throw error;
   }
 };
+
+export const fetchRecipeById = async (id: string): Promise<Recipe> => {
+  try {
+    const response = await api.get<RecipeResponse>(`/${id}`, {
+      params: {
+        type: 'public',
+        app_id: APP_ID,
+        app_key: APP_KEY,
+      },
+    });  
+    console.log(response);              
+    //return response.data;
+    //return response.data.recipe;
+    return response.data.recipe;
+  } catch (error) {
+    console.error('Error fetching recipe:', error);
+    throw error; 
+  }
+}; 

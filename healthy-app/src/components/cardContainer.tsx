@@ -10,9 +10,9 @@ export default function CardContainer({ recipes }: CardContainerProps) {
 
 
     return (
-        <div>
+        <div className="card-container">
             {recipes.map((recipe) => (
-                <RecipeReviewCard recipe={recipe} />
+                <RecipeReviewCard key={recipe.uri} recipe={recipe} />
             ))}
         </div>
     );
