@@ -7,7 +7,6 @@ interface FavouritesContainerProps {
 }
 
 export const FavouritesContainer: React.FC<FavouritesContainerProps> = ({ recipes }) => {
-  console.log(recipes);
   return (
     <div>
       <h1>Favorites</h1>

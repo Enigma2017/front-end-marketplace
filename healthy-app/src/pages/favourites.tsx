@@ -8,11 +8,15 @@ interface FavouritesProps {}
 
 export const Favourites: React.FC<FavouritesProps> = observer(() => {
   useEffect(() => {
-    favoriteStore.favoriteRecipes.forEach(async (id) => {
-      const doc = await fetchRecipeById(id);
-      // Assuming `addFavoriteRecipeDoc` accepts a Recipe object.
-      favoriteStore.addFavoriteRecipeDoc(doc);
-    });
+    // Восстанавливаем рецепты при переходе на страницу избранного
+    favoriteStore.clearFavoriteRecipeDocs();
+    const loadFavoriteRecipes = async () => {
+      const promises = favoriteStore.favoriteRecipes.map(id => fetchRecipeById(id));
+      const favoriteDocs = await Promise.all(promises);
+      favoriteDocs.forEach(doc => favoriteStore.addFavoriteRecipeDoc(doc));
+    };
+
+    loadFavoriteRecipes();
   }, []);
 
   return (

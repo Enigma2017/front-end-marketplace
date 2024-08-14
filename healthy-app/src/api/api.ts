@@ -44,9 +44,6 @@ export const fetchRecipeById = async (id: string): Promise<Recipe> => {
         app_key: APP_KEY,
       },
     });  
-    console.log(response);              
-    //return response.data;
-    //return response.data.recipe;
     return response.data.recipe;
   } catch (error) {
     console.error('Error fetching recipe:', error);

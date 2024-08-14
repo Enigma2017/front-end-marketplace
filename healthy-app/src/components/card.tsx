@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { observer } from "mobx-react-lite";
 import { styled } from "@mui/material/styles";
 import Card from "@mui/material/Card";
@@ -19,6 +19,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import FlatwareIcon from "@mui/icons-material/Flatware";
 import { Recipe } from "../types/types";
 import favoriteStore from "../lib/store";
+import { extractRecipeId } from "../utilits/recipeDoc";
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -28,15 +29,6 @@ interface RecipeReviewCardProps {
   recipe: Recipe;
 }
 
-function extractRecipeId(uri: string): string {
-  const parts = uri.split("#recipe_");
-  return parts.length > 1 ? parts[1] : uri;
-}
-
-// Example usage:
-/* const uri = "http://www.edamam.com/ontologies/edamam.owl#recipe_someUniqueID";
-const id = extractRecipeId(uri);
-console.log(id); // Outputs: someUniqueID */
 
 const ExpandMore = styled((props: ExpandMoreProps) => {
   const { expand, ...other } = props;
@@ -50,24 +42,34 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 }));
 
 const RecipeReviewCard: React.FC<RecipeReviewCardProps> = observer(({ recipe }) => {
-  const { label, image, source, url, ingredients, calories, id, uri } = recipe;
-  const [expanded, setExpanded] = React.useState(false);
-  // console.log(recipe);
+  const { label, image, source, url, ingredients, calories, uri } = recipe;
+  const [expanded, setExpanded] = useState(false);
+  const id = extractRecipeId(uri);
+  const [isFavorite, setIsFavorite] = useState(favoriteStore.isFavorite(id));
+  console.log(isFavorite);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
-  const handleFavoriteClick = () => {
+  /*useEffect(() => {
+
     const id = extractRecipeId(uri);
-    if (favoriteStore.isFavorite(id)) {
+    setIsFavorite(favoriteStore.isFavorite(id));
+  }, []);*/
+
+  const handleFavoriteClick = () => {
+    //const id = extractRecipeId(uri);
+
+    if (isFavorite) {
       favoriteStore.removeFavorite(id);
     } else {
       favoriteStore.addFavorite(id);
     }
-  };
 
-  
+    // Immediately update the state to reflect the change in the UI
+    setIsFavorite(!isFavorite);
+  };
 
   return (
     <Card sx={{ maxWidth: 345 }}>
@@ -97,7 +99,7 @@ const RecipeReviewCard: React.FC<RecipeReviewCardProps> = observer(({ recipe }) 
         <IconButton
           aria-label="add to favorites"
           onClick={handleFavoriteClick}
-          color={favoriteStore.isFavorite(id) ? "primary" : "default"}
+          color={isFavorite ? "primary" : "default"}
         >
           <FavoriteIcon />
         </IconButton>
